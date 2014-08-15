@@ -31,7 +31,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -55,12 +54,12 @@ public class ArchiverBeanMain {
 	
 	private static Logger log = Logger.getLogger(ArchiverBeanMain.class.getName());
 	
-	private boolean IN_TEST_MODE = false;
+	private boolean IN_TEST_MODE = true;
 	
 //	private File mailRootDir = new File("C:/Temp/TEMP_DATA/MailDir");
 	
 	// archive any file older than this number of days
-	private int daysOlderThanToArchive = 17;
+	private int daysOlderThanToArchive = 0;
 
 	/**
 	 * Use this method for testing and scheduling as cron job.
@@ -74,8 +73,8 @@ public class ArchiverBeanMain {
 	
 //	@Schedule(hour = "*", minute = "*", second = "*/20", persistent=false)
 //	@Schedule(dayOfWeek="Mon", hour="2", persistent=false)
-//	@Schedule(dayOfMonth = "7,14", hour="2", persistent=false)
-	@Schedule(hour = "*", minute = "*", second = "*/61", persistent=false)
+	@Schedule(dayOfMonth = "7,14", hour="2", persistent=false)
+//	@Schedule(hour = "*", minute = "*", second = "*/61", persistent=false)
 	public void run() {
 		archiveJbossLogs();
 //		archiveMailFiles(); // For my specific company
@@ -86,12 +85,16 @@ public class ArchiverBeanMain {
 //		File jbossLogDir = new File(System.getProperty("jboss.server.log.dir"));
 		File jbossLogDir = new File("C:/app/servers/wildfly-8.1.0.Final/standalone/log");
 		File jbossArchiveLogDir = new File(jbossLogDir.getAbsolutePath() + "/archive");
-		archiveFiles(jbossLogDir, jbossArchiveLogDir);
+		try {
+			archiveFiles(jbossLogDir, jbossArchiveLogDir);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	
 
-	public void archiveFiles(File fromDir, File toDir) {
+	public void archiveFiles(File fromDir, File toDir) throws Exception {
 		List<File> filesForArchive = getFilesForArchive(fromDir);
 		if (filesForArchive.size() == 0) {
 			log.info("Nothing to archive");
@@ -101,121 +104,155 @@ public class ArchiverBeanMain {
 	}
 
 
-	private void createAndCleanUpArchiveFile(List<File> filesForArchive, File toDir) {
+	private void createAndCleanUpArchiveFile(List<File> filesForArchive, File toDir) throws Exception {
 
-		File tempDirToArchiveFiles = getTempArchiveDir(toDir);
+//		File tempDirToArchiveFiles = getTempArchiveDir(toDir);
 		
-		prepareFilesForArchive(filesForArchive, tempDirToArchiveFiles);
+//		prepareFilesForArchive(filesForArchive, tempDirToArchiveFiles);
 		
-		File zipFile = zipFiles(tempDirToArchiveFiles);
+//		File zipFile = zipFiles(tempDirToArchiveFiles);
 		
-		cleanup(tempDirToArchiveFiles, zipFile);
+		File tempZipFile = getArchiveFileName(toDir);
+
+		zipFiles(filesForArchive, tempZipFile);
+
+//		cleanup(tempDirToArchiveFiles, zipFile);
+		cleanup(filesForArchive);
 		
 	}
 
 
-	private void cleanup(File tempDirToArchiveFiles, File zipFile) {
-		try {
-			FileUtils.deleteDirectory(tempDirToArchiveFiles);
-			File archiveFileName = getArchiveFileName(zipFile);
-			FileUtils.moveFile(zipFile, archiveFileName);
-		} catch (IOException e) {
-			throw new RuntimeException("Could not clean up old temp files. Dir: <" 
-					+  getAbsolutePathNonNull(tempDirToArchiveFiles) + ">", e);
+	private void cleanup(List<File> filesForArchive) {
+		for (File currFile : filesForArchive) {
+			FileUtils.deleteQuietly(currFile);
 		}
 	}
 
 
+//	private void cleanup(File tempDirToArchiveFiles, File zipFile) {
+//		try {
+//			FileUtils.deleteDirectory(tempDirToArchiveFiles);
+//			File archiveFileName = getArchiveFileName(zipFile);
+//			FileUtils.moveFile(zipFile, archiveFileName);
+//		} catch (IOException e) {
+//			throw new RuntimeException("Could not clean up old temp files. Dir: <" 
+//					+  getAbsolutePathNonNull(tempDirToArchiveFiles) + ">", e);
+//		}
+//	}
 
 
-	private File getArchiveFileName(File zipFile) {
+
+
+	private File getArchiveFileName(File toDir) {
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		if (IN_TEST_MODE) {
 			// if testing, we can run this ever minute with no issues
 			df = new SimpleDateFormat("yyyy-MM-dd-mm");
 		}
 		String fileName = "archive--" + df.format(new Date()) + ".zip";
-		File resultFile = new File (zipFile.getParent() + "/" + fileName);
+		File resultFile = new File (toDir.getAbsolutePath() + "/" + fileName);
 		return resultFile;
 	}
 
-
-	private File zipFiles(File tempDirToArchiveFiles) {
-		File zipFile = null;
-		try {
-			zipFile = zipDirectory(tempDirToArchiveFiles);
-		} catch (Exception e) {
-			throw new RuntimeException("Could not zip directory.", e);
-		}
-		return zipFile;
-	}
-
-
-	private void prepareFilesForArchive(List<File> filesForArchive,
-			File tempDirToArchiveFiles) {
-		for (File currFile : filesForArchive) {
-			
-			File destFile = new File(tempDirToArchiveFiles.getAbsolutePath() + "/" + currFile.getName());
-			
-			try {
-				if (IN_TEST_MODE) {
-					FileUtils.copyFile(currFile, destFile);
-				} else {
-					FileUtils.moveFile(currFile, destFile);
-				}
-			}
-			catch (IOException ioe) {
-				throw new RuntimeException("Error, could not copy/move files to archive Dir.", ioe);
-			}
+//
+//	private File zipDir(File tempDirToArchiveFiles) {
+//		File zipFile = null;
+//		try {
+//			zipFile = zipDirectory(tempDirToArchiveFiles);
+//		} catch (Exception e) {
+//			throw new RuntimeException("Could not zip directory.", e);
+//		}
+//		return zipFile;
+//	}
+//
+//
+//	private void prepareFilesForArchive(List<File> filesForArchive,
+//			File tempDirToArchiveFiles) {
+//		for (File currFile : filesForArchive) {
+//			
 //			File destFile = new File(tempDirToArchiveFiles.getAbsolutePath() + "/" + currFile.getName());
+//			
 //			try {
-//				FileUtils.copyFile(currFile, destFile);
-//			} catch (IOException ioe) {
-//				log.log(Level.SEVERE, "Could not move file for archive!! " + currFile.getAbsolutePath(), ioe);
+//				if (IN_TEST_MODE) {
+//					FileUtils.copyFile(currFile, destFile, true);
+//				} else {
+//					FileUtils.moveFile(currFile, destFile);
+//				}
 //			}
-			
-		}
-		
+//			catch (IOException ioe) {
+//				throw new RuntimeException("Error, could not copy/move files to archive Dir.", ioe);
+//			}
+////			File destFile = new File(tempDirToArchiveFiles.getAbsolutePath() + "/" + currFile.getName());
+////			try {
+////				FileUtils.copyFile(currFile, destFile);
+////			} catch (IOException ioe) {
+////				log.log(Level.SEVERE, "Could not move file for archive!! " + currFile.getAbsolutePath(), ioe);
+////			}
+//			
+//		}
+//		
+//	}
+//
+//
+//	private File getTempArchiveDir(File toDir) {
+//		UUID uniqueDirName = UUID.randomUUID();
+//		File tempDirToArchiveFilesIn = new File(toDir.getAbsolutePath() + "/" + uniqueDirName.toString());
+//		
+//		log.info("unique dir name: " + uniqueDirName.toString());
+//		boolean success = tempDirToArchiveFilesIn.mkdirs();
+//		if (!success) {
+//			throw new RuntimeException(
+//					"Creat Directory failed :( -- Dir <" 
+//					+ tempDirToArchiveFilesIn.getAbsolutePath() + ">" );
+//		}
+//		return tempDirToArchiveFilesIn;
+//	}
+//	
+	
+	
+	private File zipFiles(List<File> files, File zipFile) throws Exception {
+			   byte[] buffer = new byte[4096];
+//		        File[] files = tempDirToArchiveFilesIn.listFiles();
+//		        UUID uniqueFileName = UUID.randomUUID();
+//		        File zipFile = new File(tempDirToArchiveFilesIn.getParent() + "/" + uniqueFileName.toString() + ".zip");
+		        FileOutputStream fout = new FileOutputStream(zipFile);
+		        ZipOutputStream zout = new ZipOutputStream(fout);	        
+		        for (File file : files) {
+		                FileInputStream fin = new FileInputStream(file);
+		                zout.putNextEntry(new ZipEntry(file.getName()));
+		                int length;
+		                while ((length = fin.read(buffer)) > 0) {
+		                    zout.write(buffer, 0, length);
+		                }
+		                zout.closeEntry();
+		                fin.close();
+		        }
+		        IOUtils.closeQuietly(zout);
+		        log.info("Created zip file: " + zipFile.getAbsolutePath());
+		        return zipFile;	
 	}
 
-
-	private File getTempArchiveDir(File toDir) {
-		UUID uniqueDirName = UUID.randomUUID();
-		File tempDirToArchiveFilesIn = new File(toDir.getAbsolutePath() + "/" + uniqueDirName.toString());
-		
-		log.info("unique dir name: " + uniqueDirName.toString());
-		boolean success = tempDirToArchiveFilesIn.mkdirs();
-		if (!success) {
-			throw new RuntimeException(
-					"Creat Directory failed :( -- Dir <" 
-					+ tempDirToArchiveFilesIn.getAbsolutePath() + ">" );
-		}
-		return tempDirToArchiveFilesIn;
-	}
-
-
-
-	private File zipDirectory(File tempDirToArchiveFilesIn) throws Exception {
-		   byte[] buffer = new byte[4096];
-	        File[] files = tempDirToArchiveFilesIn.listFiles();
-	        UUID uniqueFileName = UUID.randomUUID();
-	        File zipFile = new File(tempDirToArchiveFilesIn.getParent() + "/" + uniqueFileName.toString() + ".zip");
-	        FileOutputStream fout = new FileOutputStream(zipFile);
-	        ZipOutputStream zout = new ZipOutputStream(fout);	        
-	        for (File file : files) {
-
-	                FileInputStream fin = new FileInputStream(file);
-	                zout.putNextEntry(new ZipEntry(file.getName()));
-	                int length;
-	                while ((length = fin.read(buffer)) > 0) {
-	                    zout.write(buffer, 0, length);
-	                }
-	                zout.closeEntry();
-	                fin.close();
-	        }
-	        IOUtils.closeQuietly(zout);
-	        return zipFile;
-	}
+//	private File zipDirectory(File tempDirToArchiveFilesIn) throws Exception {
+//		   byte[] buffer = new byte[4096];
+//	        File[] files = tempDirToArchiveFilesIn.listFiles();
+//	        UUID uniqueFileName = UUID.randomUUID();
+//	        File zipFile = new File(tempDirToArchiveFilesIn.getParent() + "/" + uniqueFileName.toString() + ".zip");
+//	        FileOutputStream fout = new FileOutputStream(zipFile);
+//	        ZipOutputStream zout = new ZipOutputStream(fout);	        
+//	        for (File file : files) {
+//
+//	                FileInputStream fin = new FileInputStream(file);
+//	                zout.putNextEntry(new ZipEntry(file.getName()));
+//	                int length;
+//	                while ((length = fin.read(buffer)) > 0) {
+//	                    zout.write(buffer, 0, length);
+//	                }
+//	                zout.closeEntry();
+//	                fin.close();
+//	        }
+//	        IOUtils.closeQuietly(zout);
+//	        return zipFile;
+//	}
 
 
 	private List<File> getFilesForArchive(File fromDir) {
@@ -246,7 +283,7 @@ public class ArchiverBeanMain {
 		
 		DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
 		log.info(file.getName() + " --  " + df.format(lastModifiedDate) + "  -- Days: " + daysFromToday);
-		if (daysFromToday > daysOlderThanToArchive) {
+		if (daysFromToday >= daysOlderThanToArchive) {
 			return true;
 		} else {
 			return false;
@@ -266,13 +303,13 @@ public class ArchiverBeanMain {
 		return view;
 	}
 
-
-	private String getAbsolutePathNonNull(File file) {
-		if (file == null) {
-			return "FILE WAS NULL!";
-		} else {
-			return file.getAbsolutePath();
-		}
-	}	
+//
+//	private String getAbsolutePathNonNull(File file) {
+//		if (file == null) {
+//			return "FILE WAS NULL!";
+//		} else {
+//			return file.getAbsolutePath();
+//		}
+//	}	
 
 }
