@@ -54,12 +54,12 @@ public class ArchiverBeanMain {
 	
 	private static Logger log = Logger.getLogger(ArchiverBeanMain.class.getName());
 	
-	private boolean IN_TEST_MODE = true;
+	private boolean IN_TEST_MODE = false;
 	
 //	private File mailRootDir = new File("C:/Temp/TEMP_DATA/MailDir");
 	
 	// archive any file older than this number of days
-	private int daysOlderThanToArchive = 0;
+	private int daysOlderThanToArchive = 14;
 
 	/**
 	 * Use this method for testing and scheduling as cron job.
