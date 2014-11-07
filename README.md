@@ -1,6 +1,9 @@
 
-Welcome to the Archiver bean.
-A very simple bean (or cron job) to archive files.
+Welcome to the Deployment Utilities.
+This is designed to be an easy way to archive/clean up old files, specifically log files.
+
+
+
 
 right click on the "pom.xml" and select "Run As->Maven Build as..." for the Goal put "package" 
 You should then see in you target directory "logfilearchiver-X.X.X.war"
@@ -13,5 +16,10 @@ used this lol :)
 
 Good luck and have fun,
 Ben
+
+
+
+To Run the full tests locally you will need to change the Testing Global file.
+
 
 

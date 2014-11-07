@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="OFF">
+  <appenders>
+	<RollingFile name="RollingFile" fileName="logs/DeploymentUtils.log" 
+			filePattern="logs/DeploymentUtils-%d{MM-dd-yyyy}.log"
+            ignoreExceptions="false">
+      <PatternLayout>
+        <Pattern>%d %p %c{1.} %m%n</Pattern>
+      </PatternLayout>
+      <TimeBasedTriggeringPolicy interval="1" />
+    </RollingFile>
+  </appenders>
+  
+  <loggers>
+    <root level="INFO">
+      <appender-ref ref="RollingFile"/>
+    </root>
+  </loggers>
+</configuration>
+
+
+
