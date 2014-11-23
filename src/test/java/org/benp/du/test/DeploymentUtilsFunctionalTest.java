@@ -1,7 +1,6 @@
-package org.ben.deploymentutils.test;
+package org.benp.du.test;
 
-import org.benp.filearchiver.ArchiverCronMain;
-import org.benp.filearchiver.ArchiverCronMainTest;
+import org.benp.filearchiver.DeploymentUtilsMainTest;
 
 public class DeploymentUtilsFunctionalTest {
 
@@ -19,10 +18,11 @@ public class DeploymentUtilsFunctionalTest {
 		String dirToCreateFilesIn =  
 				DeploymentUtilsGlobal.TESTING_ROOT_DIR 
 				+ "/" + DeploymentUtilsGlobal.TESTING_ROOT_DIR_FILES_TO_ARCHIVE;
-		DeploymentUtilsTestingUtils.createTestFiles(dirToCreateFilesIn);
+		DuTestingUtils deploymentUtilsTestingUtils = new DuTestingUtils();
+		deploymentUtilsTestingUtils.createTestFiles(dirToCreateFilesIn);
 		
-		ArchiverCronMain archiver = new ArchiverCronMainTest();
-		archiver.run(null);
+		DeploymentUtilsMainTest archiver = new DeploymentUtilsMainTest();
+		archiver.run();
 		
 		
 	}

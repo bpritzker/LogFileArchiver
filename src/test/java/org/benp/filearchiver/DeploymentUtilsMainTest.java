@@ -2,9 +2,10 @@ package org.benp.filearchiver;
 
 import java.io.File;
 
-import org.ben.deploymentutils.test.DeploymentUtilsGlobal;
+import org.benp.du.DeploymentUtilsMain;
+import org.benp.du.test.DeploymentUtilsGlobal;
 
-public class ArchiverCronMainTest extends ArchiverCronMain {
+public class DeploymentUtilsMainTest extends DeploymentUtilsMain {
 
 	@Override
 	protected File getPropertiesFile() {

@@ -1,4 +1,4 @@
-package org.benp.file;
+package org.benp.du.util;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,9 +23,9 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 
-public class DeploymentFileUtils {
+public class DeploymentUtilsFileUtils {
 	
-	private static Logger logger = LogManager.getLogger(DeploymentFileUtils.class.getName());
+	private static Logger logger = LogManager.getLogger(DeploymentUtilsFileUtils.class.getName());
 	
 	
 	public static List<File> getFilesToArchive(int daysFromNowToArchive, File archiveFileDir) {
@@ -126,6 +127,13 @@ public class DeploymentFileUtils {
 		} else {
 			return file.getAbsolutePath();
 		}
+	}
+	
+	
+	public static String nowDateStamp() {
+		Date now = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		return sdf.format(now);
 	}
 
 }

@@ -1,4 +1,4 @@
-package org.ben.deploymentutils.test;
+package org.benp.du.test;
 
 public class DeploymentUtilsGlobal {
 

@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration status="OFF">
   <appenders>
-    <Console name="Console" target="SYSTEM_OUT">
-      <PatternLayout pattern="%d{HH:mm:ss} %-5level %logger{36} - %msg%n"/>
-    </Console>
+	<RollingFile name="RollingFile" fileName="logs/DeploymentUtils.log" 
+			filePattern="logs/DeploymentUtils-%d{MM-dd-yyyy}.log"
+            ignoreExceptions="false">
+      <PatternLayout>
+        <Pattern>%d %p %c{1.} %m%n</Pattern>
+      </PatternLayout>
+      <TimeBasedTriggeringPolicy interval="1" />
+    </RollingFile>
   </appenders>
   
   <loggers>
     <root level="INFO">
-      <appender-ref ref="Console"/>
+      <appender-ref ref="RollingFile"/>
     </root>
   </loggers>
 </configuration>
+
+
+

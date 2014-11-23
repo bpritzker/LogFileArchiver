@@ -1,4 +1,4 @@
-package org.benp.filearchiver;
+package org.benp.du.util;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,7 +11,6 @@ import java.util.Properties;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.benp.file.DeploymentFileUtils;
 
 
 /**
@@ -19,9 +18,10 @@ import org.benp.file.DeploymentFileUtils;
  * @author Ben Pritzker
  *
  */
-public class ArchiverCronMain {
+@Deprecated
+public class ArchiverCronOld {
 	
-	private static Logger logger = LogManager.getLogger(ArchiverCronMain.class.getName());
+	private static Logger logger = LogManager.getLogger(ArchiverCronOld.class.getName());
 	
 	private String filesToArchiveDir;
 	private String archiveFileDir;
@@ -29,18 +29,18 @@ public class ArchiverCronMain {
 
 	public static void main(String[] args) {
 		logger.info("Staring ArchiverCronMain");
-		ArchiverCronMain archiverCronMain = new ArchiverCronMain();
+		ArchiverCronOld archiverCronMain = new ArchiverCronOld();
 		archiverCronMain.run(args);
 		logger.info("Done ArchiverCronMain");
 	}
 
 	public void run(String[] args) {
 		init(args);
-		List<File> filesToArchive = DeploymentFileUtils.getFilesToArchive(
+		List<File> filesToArchive = DeploymentUtilsFileUtils.getFilesToArchive(
 				daysFromNowToArchive, new File(filesToArchiveDir));
 		File zipArchiveFile = getZipArchiveFile();
 		try {
-			DeploymentFileUtils.zipFiles(filesToArchive, zipArchiveFile);
+			DeploymentUtilsFileUtils.zipFiles(filesToArchive, zipArchiveFile);
 			// delete the files..
 			for (File currFile : filesToArchive) {
 				FileUtils.deleteQuietly(currFile);
@@ -72,14 +72,14 @@ public class ArchiverCronMain {
 			properties.load(input);
 		} catch (FileNotFoundException fnfe) {
 			logger.fatal("COULD NOT FIND PROPERTIES FILE! <" 
-					+ DeploymentFileUtils.getAbsoluteFileName(propsFile)+ ">");
+					+ DeploymentUtilsFileUtils.getAbsoluteFileName(propsFile)+ ">");
 			throw new RuntimeException("COULD NOT FIND PROPERTIES FILE! <" 
-					+ DeploymentFileUtils.getAbsoluteFileName(propsFile)+ ">");
+					+ DeploymentUtilsFileUtils.getAbsoluteFileName(propsFile)+ ">");
 		} catch (IOException ioe) {
 			logger.fatal("COULD NOT LOAD PROPERTIES FILE! <" 
-					+ DeploymentFileUtils.getAbsoluteFileName(propsFile)+ ">");
+					+ DeploymentUtilsFileUtils.getAbsoluteFileName(propsFile)+ ">");
 			throw new RuntimeException("COULD NOT LOAD PROPERTIES FILE! <" 
-					+ DeploymentFileUtils.getAbsoluteFileName(propsFile)+ ">");			
+					+ DeploymentUtilsFileUtils.getAbsoluteFileName(propsFile)+ ">");			
 		}
 		filesToArchiveDir = properties.getProperty("archive.filesToArchiveDir");
 		archiveFileDir = properties.getProperty("archive.archiveFileDir");

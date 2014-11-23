@@ -1,4 +1,4 @@
-package org.benp.notify;
+package org.benp.du.alert;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,17 +11,19 @@ import java.nio.file.attribute.FileTime;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Properties;
+
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Seconds;
-
-
-import java.util.*;
-import javax.mail.*;
-import javax.mail.internet.*;
-import javax.activation.*;
 
 
 /**
@@ -31,7 +33,7 @@ import javax.activation.*;
  * @author Ben Pritzker
  *
  */
-public class NotifyOnNoUpdate {
+public class AlertOnNoUpdate {
 	
 	private static final Logger log = LogManager.getLogger("NotifyOnNoUpdate");
 
@@ -41,7 +43,7 @@ public class NotifyOnNoUpdate {
 	
 	public static void main(String[] args) {
 		System.out.println("Running...");
-		NotifyOnNoUpdate notifyOnNoUpdate = new NotifyOnNoUpdate();
+		AlertOnNoUpdate notifyOnNoUpdate = new AlertOnNoUpdate();
 		notifyOnNoUpdate.run();
 	}
 
