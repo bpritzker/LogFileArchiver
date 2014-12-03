@@ -23,16 +23,16 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 
-public class DeploymentUtilsFileUtils {
+public class DuFileUtils {
 	
-	private static Logger logger = LogManager.getLogger(DeploymentUtilsFileUtils.class.getName());
+	private static Logger logger = LogManager.getLogger(DuFileUtils.class.getName());
 	
 	
-	public static List<File> getFilesToArchive(int daysFromNowToArchive, File archiveFileDir) {
+	public static List<File> getFilesOlderThanDaysFromNow(int daysFromNow, File archiveFileDir) {
 		List<File> resultFiles = new ArrayList<>();
 		File[] listOfFiles = archiveFileDir.listFiles();
 		for (File currFile : listOfFiles) {
-			if (getDaysFromToday(currFile) >= daysFromNowToArchive) {
+			if (getDaysFromToday(currFile) >= daysFromNow) {
 				resultFiles.add(currFile);
 			}
 		}
@@ -93,13 +93,13 @@ public class DeploymentUtilsFileUtils {
 	 */
 	public static boolean deleteFiles(List<File> files) {
 		boolean resultSuccessfulDelete = true;
-			for (File currFile : files) {
-				boolean tempDelete = currFile.delete();
-				if (tempDelete == false) {
-					resultSuccessfulDelete = false;
-				}
+		for (File currFile : files) {
+			boolean tempDelete = currFile.delete();
+			if (tempDelete == false) {
+				resultSuccessfulDelete = false;
 			}
-			return resultSuccessfulDelete;
+		}
+		return resultSuccessfulDelete;
 	}
 	
 	

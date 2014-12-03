@@ -22,7 +22,7 @@ public class DeploymentUtilsFunctionalTest {
 		deploymentUtilsTestingUtils.createTestFiles(dirToCreateFilesIn);
 		
 		DeploymentUtilsMainTest archiver = new DeploymentUtilsMainTest();
-		archiver.run();
+		archiver.run(null);
 		
 		
 	}

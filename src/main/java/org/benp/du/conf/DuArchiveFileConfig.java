@@ -2,7 +2,7 @@ package org.benp.du.conf;
 
 import java.io.File;
 
-public class ArchiveFileConfig {
+public class DuArchiveFileConfig extends DuConfigBase {
 	
 	private int daysFromNowToArchive;
 	private File fileFromDir;
@@ -34,5 +34,9 @@ public class ArchiveFileConfig {
 		this.filesDestArchiveDir = filesDestArchiveDir;
 	}
 	
+	@Override
+	public String getName() {
+		return "Archive File Config";
+	}
 	
 }

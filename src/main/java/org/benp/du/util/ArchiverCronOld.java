@@ -36,11 +36,11 @@ public class ArchiverCronOld {
 
 	public void run(String[] args) {
 		init(args);
-		List<File> filesToArchive = DeploymentUtilsFileUtils.getFilesToArchive(
+		List<File> filesToArchive = DuFileUtils.getFilesOlderThanDaysFromNow(
 				daysFromNowToArchive, new File(filesToArchiveDir));
 		File zipArchiveFile = getZipArchiveFile();
 		try {
-			DeploymentUtilsFileUtils.zipFiles(filesToArchive, zipArchiveFile);
+			DuFileUtils.zipFiles(filesToArchive, zipArchiveFile);
 			// delete the files..
 			for (File currFile : filesToArchive) {
 				FileUtils.deleteQuietly(currFile);
@@ -72,14 +72,14 @@ public class ArchiverCronOld {
 			properties.load(input);
 		} catch (FileNotFoundException fnfe) {
 			logger.fatal("COULD NOT FIND PROPERTIES FILE! <" 
-					+ DeploymentUtilsFileUtils.getAbsoluteFileName(propsFile)+ ">");
+					+ DuFileUtils.getAbsoluteFileName(propsFile)+ ">");
 			throw new RuntimeException("COULD NOT FIND PROPERTIES FILE! <" 
-					+ DeploymentUtilsFileUtils.getAbsoluteFileName(propsFile)+ ">");
+					+ DuFileUtils.getAbsoluteFileName(propsFile)+ ">");
 		} catch (IOException ioe) {
 			logger.fatal("COULD NOT LOAD PROPERTIES FILE! <" 
-					+ DeploymentUtilsFileUtils.getAbsoluteFileName(propsFile)+ ">");
+					+ DuFileUtils.getAbsoluteFileName(propsFile)+ ">");
 			throw new RuntimeException("COULD NOT LOAD PROPERTIES FILE! <" 
-					+ DeploymentUtilsFileUtils.getAbsoluteFileName(propsFile)+ ">");			
+					+ DuFileUtils.getAbsoluteFileName(propsFile)+ ">");			
 		}
 		filesToArchiveDir = properties.getProperty("archive.filesToArchiveDir");
 		archiveFileDir = properties.getProperty("archive.archiveFileDir");
